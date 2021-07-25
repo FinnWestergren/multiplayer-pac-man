@@ -7,5 +7,8 @@
         "start-server": "npm run kill-server && cd ./server && npm install core && npm run host",
         "start": "start npm run start-server && npm run start-client",
         "all": "npm run install-everything && npm run build && npm run start"
+    },
+    "dependencies": {
+        "react-redux": "^7.2.4"
     }
 }

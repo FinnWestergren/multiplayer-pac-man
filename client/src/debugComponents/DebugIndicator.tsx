@@ -2,10 +2,8 @@ import styled from "@emotion/styled";
 import React, { FunctionComponent, useState } from "react";
 
 type Props = {
-    className?: string
     label: string;
-    timer?: number;
-    update: () => string | number;
+    value?: number | string;
 };
 
 const StyledKey = styled.div`
@@ -20,9 +18,7 @@ const StyledVal = styled.div`
     grid-column-end: 3;
 ` 
 
-const DebugIndicator: FunctionComponent<Props> = ({ label, update, timer, className }) => {
-    const [value, setValue] = useState(update());
-    window.setInterval(() => setValue(update()), timer ?? 1000)
+const DebugIndicator: FunctionComponent<Props> = ({ label, value }) => {
     return (<>
         <StyledKey>{label}</StyledKey>
         <StyledVal>{value}</StyledVal>

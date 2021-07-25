@@ -17,7 +17,8 @@ export enum MessageType {
     STATE_OVERRIDE = "STATE_OVERRIDE",
     STATE_CORRECTION = "STATE_CORRECTION",
     SET_SIMULATED_LAG = "SET_SIMULATED_LAG",
-    LATENCY_UPDATE = "LATENCY_UPDATE"
+    LATENCY_UPDATE = "LATENCY_UPDATE",
+    SET_PLAYER_MINERALS = "SET_PLAYER_MINERALS"
 }
 
 export type ClientMessage =
@@ -37,7 +38,8 @@ export type ServerMessage =
     { type: MessageType.INVALID } |
     { type: MessageType.STATE_OVERRIDE, payload: Dictionary<Actor> } |
     { type: MessageType.STATE_CORRECTION, payload: { soft:  Dictionary<CoordPair>, hard: Dictionary<ActorStatus> } } |
-    { type: MessageType.PLAYER_INPUT, payload: { playerId: string; input: StampedInput } }
+    { type: MessageType.PLAYER_INPUT, payload: { playerId: string; input: StampedInput } } |
+    { type: MessageType.SET_PLAYER_MINERALS, payload: { [playerId: string]: number }}
 
 export type MapResponse = {
     cells: Direction[][];

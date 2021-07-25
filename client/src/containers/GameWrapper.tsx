@@ -3,11 +3,9 @@ import P5Wrapper from "./P5Wrapper";
 import styled from "@emotion/styled";
 import { createStore } from "redux";
 import initializeSocket from "../socket";
-import { sendSimulatedLagInput } from "../socket/clientExtensions";
-import { runGame, getUpdateFrequency, ReduxStore, gameReducer } from "core";
-import Slider from "../debugComponents/DebugSlider";
-import ControllerGrid from "../debugComponents/ControllerGrid";
-import DebugIndicator from "../debugComponents/DebugIndicator";
+import { runGame, ReduxStore, gameReducer } from "core";
+import { Provider } from "react-redux";
+import DebugLayer from "./DebugLayer";
 
 const FlexContainer = styled.div`
     display: flex;
@@ -21,19 +19,9 @@ const GameWrapper: FunctionComponent = () => {
     return (
         <FlexContainer>
             <P5Wrapper log={console.log} />
-            <ControllerGrid>
-                <Slider
-                    min={0}
-                    max={100}
-                    value={0}
-                    onChange={sendSimulatedLagInput}
-                    sliderId="sim-lag-input"
-                    label="simulated lag (ms)" />
-                <DebugIndicator
-                    label='UPS'
-                    timer={2000}
-                    update={() => Math.floor(getUpdateFrequency() * 1000)} />
-            </ControllerGrid>
+            <Provider store={Store}>
+                <DebugLayer/>
+            </Provider>
         </FlexContainer>
     );
 };

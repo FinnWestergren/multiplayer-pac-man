@@ -11,6 +11,7 @@ export const playerStateReducer: Reducer<PlayerState, PlayerStateAction> = (stat
         case PlayerStateActionTypes.SET_PLAYER_MINERALS: {
             const playerMineralsDict = { ...draft.playerMineralsDict, [action.payload.playerId]: action.payload.minerals };
             draft.playerMineralsDict = playerMineralsDict;
+            break;
         }
         case PlayerStateActionTypes.ADD_PLAYER_MINERALS: {
             const playerMinerals = draft.playerMineralsDict[action.payload.playerId];
@@ -19,6 +20,7 @@ export const playerStateReducer: Reducer<PlayerState, PlayerStateAction> = (stat
             }
             const playerMineralsDict = { ...draft.playerMineralsDict, [action.payload.playerId]: (action.payload.minerals + playerMinerals) };
             draft.playerMineralsDict = playerMineralsDict;
+            break;
         }
     }
     return draft;

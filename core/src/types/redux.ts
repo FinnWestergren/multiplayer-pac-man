@@ -14,8 +14,7 @@ export type ReduxStore = Store<ReduxState, MapStateAction | ActorStateAction | P
 export type ReduxState = {
     actorState: ActorState,
     mapState: MapState,
-    PlayerState: PlayerState
-
+    playerState: PlayerState
 }
 
 /* #region MapTypes  */

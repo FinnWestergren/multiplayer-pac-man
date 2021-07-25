@@ -8,7 +8,8 @@ import {
     StampedInput,
     refreshMap,
     initPlayer,
-    setActorState
+    setActorState,
+    setPlayerMinerals
 } from "core";
 
 import { ClientSocket, Store } from "../containers/GameWrapper";
@@ -42,7 +43,12 @@ export function handleMessage(message: ServerMessage): void {
             return;
         case MessageType.STATE_CORRECTION:
             handleStateCorrection(Store, message.payload);
-            return
+            return;
+        case MessageType.SET_PLAYER_MINERALS:
+            Object.keys(message.payload).forEach(pId => {
+                setPlayerMinerals(Store, pId, message.payload[pId]);
+            });
+            return;
         default:
             console.error('recieved an invalid message type from server')
             return;
