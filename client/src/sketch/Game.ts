@@ -3,11 +3,9 @@ import { Store } from "../containers/GameWrapper";
 import { Actor, ActorType, CoordPair, CoordPairUtils, dijkstras, Direction, junctionSelector } from "core";
 import { bindHumanPlayer } from "./Controls";
 import Cell from "./Cell";
-
-const SIZE_FACTOR = 0.7;
+import { drawActor } from "./ActorDrawer";
 
 export default class Game {
-	private champSize: number = 0;
 	private currentPlayer?: string;
 	private selectedActorId?: string;
 
@@ -21,7 +19,6 @@ export default class Game {
 			if (this.currentPlayer) {
 				bindHumanPlayer(p, this.currentPlayer, (actorId) => { this.selectedActorId = actorId }, () => this.selectedActorId);
 			}
-			this.champSize = SIZE_FACTOR * Store.getState().mapState.cellDimensions.cellSize;
 			this.drawMap();
 		});
 
@@ -59,40 +56,9 @@ export default class Game {
 			}
 			return 0;
 		})
-		.forEach(actor => this.drawActor(p, actor));
+		.forEach(actor => drawActor(p, actor, this.selectedActorId == actor.id));
 	};
 
-	private drawActor = (p: p5, actor: Actor) => {
-		const location = actor.status.location;
-		const cellSize = Store.getState().mapState.cellDimensions.cellSize;
-		const drawShape = () => {
-			const actorSize = ActorType.CHAMPION ? this.champSize : this.champSize * 0.66
-			p.beginShape(p.QUADS);
-			p.vertex(0, -actorSize * 0.5); // tip
-			p.vertex(actorSize * 0.3, actorSize * 0.3); // rightwing
-			p.vertex(0, 0); // nut
-			p.vertex(-actorSize * 0.3, actorSize * 0.3); //leftwing
-			p.endShape(p.CLOSE);}
-		const IDcolor = p.color(`#${actor.ownerId.substr(0, 6)}`);
-		const isFriendly = actor.ownerId === Store.getState().playerState.currentPlayer;
-		const factionColor = isFriendly ? p.color('#edf5f7') : p.color('#cc5b47')
-		p.push();
-		p.translate((location.x + 0.5) * cellSize, (location.y + 0.65) * cellSize);
-		p.angleMode(p.DEGREES);
-		p.rotate(Math.log2(actor.status.orientation) * 90); // *chefs kiss*
-		const isSelected = this.selectedActorId === actor.id;
-		p.noFill();
-		p.strokeWeight(isSelected ? 4 : 3);
-		p.stroke(factionColor);
-		drawShape();
-		p.strokeWeight(isSelected ? 2 : 1);
-		p.stroke(IDcolor);
-		if (isSelected) {
-			p.fill(factionColor);
-		}
-		drawShape()
-		p.pop();
-	};
 
 	private drawPath = (p: p5, path: CoordPair[], totalDist: number) => {
 		const textOffset = 10;
