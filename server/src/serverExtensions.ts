@@ -12,7 +12,6 @@ import {
     Direction,
     CellModifier,
 } from "core";
-import { generateMapUsingRandomDFS } from "./mapGenerator";
 import {
     Store,
     writeToSinglePlayer,
