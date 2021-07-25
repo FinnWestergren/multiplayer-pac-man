@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 
 type Props = {
     label: string;

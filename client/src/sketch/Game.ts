@@ -1,6 +1,6 @@
 import p5 from "p5";
 import { Store } from "../containers/GameWrapper";
-import { Actor, ActorType, CoordPair, CoordPairUtils, dijkstras, Direction, junctionSelector } from "core";
+import { CoordPair, CoordPairUtils, dijkstras, Direction, junctionSelector } from "core";
 import { bindHumanPlayer } from "./Controls";
 import Cell from "./Cell";
 import { drawActor } from "./ActorDrawer";
@@ -56,7 +56,7 @@ export default class Game {
 			}
 			return 0;
 		})
-		.forEach(actor => drawActor(p, actor, this.selectedActorId == actor.id));
+		.forEach(actor => drawActor(p, actor, this.selectedActorId === actor.id));
 	};
 
 
