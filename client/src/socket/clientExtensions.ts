@@ -9,7 +9,8 @@ import {
     refreshMap,
     initPlayer,
     setActorState,
-    setPlayerMinerals
+    setPlayerMinerals,
+    setCurrentPlayer
 } from "core";
 
 import { ClientSocket, Store } from "../containers/GameWrapper";
@@ -24,7 +25,8 @@ export function handleMessage(message: ServerMessage): void {
             sendLatencyUpdate(ping);
             return;
         case MessageType.INIT_PLAYER:
-            setActorState(Store, message.payload);
+            setCurrentPlayer(Store, message.payload.currentPlayerId);
+            setActorState(Store, message.payload.actorState);
             return;
         case MessageType.MAP_RESPONSE:
             refreshMap(Store, message.payload);

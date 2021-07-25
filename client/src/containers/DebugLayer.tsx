@@ -36,7 +36,7 @@ const DebugLayer: FunctionComponent<Props> = ({currentPlayerMinerals}) => {
 };
 
 const mapStateToProps = (state: ReduxState) => {
-    const currentPlayer = state.actorState.currentPlayer;
+    const currentPlayer = state.playerState.currentPlayer;
     return {
         currentPlayerMinerals: currentPlayer ? state.playerState.playerMineralsDict[currentPlayer] : 0
     }

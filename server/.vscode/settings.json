@@ -1,6 +1,0 @@
-{
-    "files.exclude": {
-        "static": false,
-        "node_modules": false
-    }
-}

@@ -49,41 +49,45 @@ export type MapStateAction =
 /* #region ActorTypes  */
 
 export type ActorState = {
-    currentPlayer?: string; // should move this to playerState
     actorPathDict: Dictionary<CoordPair[]>;
     actorDict: Dictionary<Actor>;
     actorOwnershipDict: Dictionary<string[]>;
-    playerList: string[];  // should move this to playerState
 };
 
 export enum ActorStateActionTypes {
     SET_ACTOR_STATUS = "SET_ACTOR_STATUS",
-    ADD_PLAYER = "ADD_PLAYER",
     ADD_ACTOR = "ADD_ACTOR",
-    REMOVE_PLAYER = "REMOVE_PLAYER",
     REMOVE_ACTOR = "REMOVE_ACTOR",
-    SET_GAME_STATE = "SET_GAME_STATE"
+    SET_GAME_STATE = "SET_GAME_STATE",
+    REMOVE_ACTORS_FOR_PLAYER = "REMOVE_ACTORS_FOR_PLAYER"
 };
 
 export type ActorStateAction =
     { type: ActorStateActionTypes.SET_ACTOR_STATUS; payload: { actorId: string, status: ActorStatus } } |
-    { type: ActorStateActionTypes.ADD_PLAYER; payload: string } |
-    { type: ActorStateActionTypes.REMOVE_PLAYER; payload: string } |
     { type: ActorStateActionTypes.ADD_ACTOR; payload: { ownerId: string, actorId: string, actorType: ActorType, location: CoordPair } } |
     { type: ActorStateActionTypes.REMOVE_ACTOR; payload: string } |
+    { type: ActorStateActionTypes.REMOVE_ACTORS_FOR_PLAYER; payload: string } |
     { type: ActorStateActionTypes.SET_GAME_STATE; payload: ActorState }
 /* #endregion ActorTypes  */
 /* #region PlayerTypes  */
     export type PlayerState = {
-        playerMineralsDict: Dictionary<number>
+        playerMineralsDict: Dictionary<number>;
+        currentPlayer?: string;
+        playerList: string[];
     }
 
     export enum PlayerStateActionTypes {
         SET_PLAYER_MINERALS = "SET_PLAYER_MINERALS",
-        ADD_PLAYER_MINERALS = "ADD_PLAYER_MINERALS"
+        ADD_PLAYER_MINERALS = "ADD_PLAYER_MINERALS",
+        REMOVE_PLAYER = "REMOVE_PLAYER",
+        ADD_PLAYER = "ADD_PLAYER",
+        SET_CURRENT_PLAYER = "SET_CURRENT_PLAYER"
     };
     
     export type PlayerStateAction =
         { type: PlayerStateActionTypes.SET_PLAYER_MINERALS; payload: { playerId: string, minerals: number } } |
-        { type: PlayerStateActionTypes.ADD_PLAYER_MINERALS; payload: { playerId: string, minerals: number } } 
+        { type: PlayerStateActionTypes.ADD_PLAYER_MINERALS; payload: { playerId: string, minerals: number } } |
+        { type: PlayerStateActionTypes.ADD_PLAYER; payload: string } |
+        { type: PlayerStateActionTypes.REMOVE_PLAYER; payload: string } |
+        { type: PlayerStateActionTypes.SET_CURRENT_PLAYER; payload: string } 
 /* #endregion PlayerTypes  */

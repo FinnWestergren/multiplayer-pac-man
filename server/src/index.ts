@@ -96,7 +96,7 @@ const addPlayerEverywhere = (playerId: string) => {
 	const championId = generateGuid();
 	initPlayer(Store, playerId, championId);
 	writeToSinglePlayer({ type: MessageType.MAP_RESPONSE, payload: getCurrentMap() }, playerId);
-	writeToSinglePlayer({ type: MessageType.INIT_PLAYER, payload: { currentPlayer: playerId, ...Store.getState().actorState }}, playerId);
+	writeToSinglePlayer({ type: MessageType.INIT_PLAYER, payload: { currentPlayerId: playerId, actorState: Store.getState().actorState }}, playerId);
 	writeToAllPlayers({ type: MessageType.ADD_PLAYER, payload: { playerId, championId} }, 2, playerId);
 }
 

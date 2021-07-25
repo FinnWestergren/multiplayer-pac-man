@@ -30,7 +30,7 @@ export type ClientMessage =
     { type: MessageType.LATENCY_UPDATE, payload: number }
 
 export type ServerMessage = 
-    { type: MessageType.INIT_PLAYER, payload: ActorState }|
+    { type: MessageType.INIT_PLAYER, payload: { currentPlayerId: string, actorState: ActorState } }|
     { type: MessageType.ADD_PLAYER, payload: { playerId: string; championId: string } } |
     { type: MessageType.REMOVE_PLAYER, payload: string } |
     { type: MessageType.PONG } |

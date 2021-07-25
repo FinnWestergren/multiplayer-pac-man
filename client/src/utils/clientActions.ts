@@ -3,7 +3,7 @@ import { Store } from "../containers/GameWrapper";
 import { sendPlayerInput } from "../socket/clientExtensions";
 
 export const moveUnit = (actorId: string, destination: CoordPair) => {
-	const playerId = Store.getState().actorState.currentPlayer;
+	const playerId = Store.getState().playerState.currentPlayer;
 	const origin = Store.getState().actorState.actorDict[actorId]?.status.location;
 	if (!origin || !playerId) return; // probably should do some error reporting or something someday
 	if (!Store.getState().actorState.actorOwnershipDict[playerId].includes(actorId)) return;
@@ -25,7 +25,7 @@ export const moveUnit = (actorId: string, destination: CoordPair) => {
 }
 
 export const createUnit = (destination: CoordPair, actorType: ActorType) => {
-	const playerId = Store.getState().actorState.currentPlayer;
+	const playerId = Store.getState().playerState.currentPlayer;
 	if (!playerId) return; // probably should do some error reporting or something someday
 
 	const actorId = generateGuid();

@@ -5,7 +5,6 @@ import { ActorStatus, ActorType } from "../types/actor";
 
 const initialState: ActorState = {
     actorDict: {},
-    playerList: [],
     actorPathDict: {},
     actorOwnershipDict: {}
 };
@@ -17,11 +16,6 @@ export const actorStateReducer: Reducer<ActorState, ActorStateAction> = (state: 
             return action.payload;
         case ActorStateActionTypes.SET_ACTOR_STATUS:
             draft.actorDict[action.payload.actorId].status = action.payload.status;
-            break;
-        case ActorStateActionTypes.ADD_PLAYER:
-            if (!state.playerList.some(p => p === action.payload)) {
-                draft.playerList = [...draft.playerList, action.payload];
-            }
             break;
         case ActorStateActionTypes.ADD_ACTOR:
             draft.actorDict[action.payload.actorId] = { 
@@ -37,16 +31,15 @@ export const actorStateReducer: Reducer<ActorState, ActorStateAction> = (state: 
                 draft.actorOwnershipDict[action.payload.ownerId] = [action.payload.actorId];
             }
             break;
-        case ActorStateActionTypes.REMOVE_PLAYER:
+        case ActorStateActionTypes.REMOVE_ACTOR:
+            const obj = draft.actorDict[action.payload];
+            draft.actorOwnershipDict[obj.ownerId] = draft.actorOwnershipDict[obj.ownerId].filter(o => o != action.payload); 
+            break;
+        case ActorStateActionTypes.REMOVE_ACTORS_FOR_PLAYER:
             draft.actorOwnershipDict[action.payload]?.forEach(oId => {
                 delete draft.actorDict[oId];
             });
             delete draft.actorOwnershipDict[action.payload];
-            draft.playerList = draft.playerList.filter(p => p != action.payload);
-            break;
-        case ActorStateActionTypes.REMOVE_ACTOR:
-            const obj = draft.actorDict[action.payload];
-            draft.actorOwnershipDict[obj.ownerId] = draft.actorOwnershipDict[obj.ownerId].filter(o => o != action.payload); 
             break;
     }
     return draft;
@@ -58,11 +51,10 @@ export const setActorState = (store: ReduxStore, state: ActorState) =>
 export const updateActorStatus = (store: ReduxStore, actorId: string, newStatus: ActorStatus) => 
     store.dispatch({ type: ActorStateActionTypes.SET_ACTOR_STATUS, payload: { actorId, status: newStatus } });
 
-export const addPlayer = (store: ReduxStore, playerId: string) =>
-    store.dispatch({ type: ActorStateActionTypes.ADD_PLAYER, payload: playerId });
-
 export const addActor = (store: ReduxStore, ownerId: string, actorId: string, actorType: ActorType, location: CoordPair) => 
     store.dispatch({ type: ActorStateActionTypes.ADD_ACTOR, payload: { ownerId, actorType, location, actorId }});
 
-export const removePlayer = (store: ReduxStore, playerId: string) =>
-    store.dispatch({ type: ActorStateActionTypes.REMOVE_PLAYER, payload: playerId });
+export const removePlayerActors = (store: ReduxStore, playerId: string) => {
+    store.dispatch({ type: ActorStateActionTypes.REMOVE_ACTORS_FOR_PLAYER, payload: playerId });
+
+}

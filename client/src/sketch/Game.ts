@@ -27,7 +27,7 @@ export default class Game {
 
 		Store.subscribe(() => {
 			const oldAssignment = this.currentPlayer;
-			this.currentPlayer = Store.getState().actorState.currentPlayer;
+			this.currentPlayer = Store.getState().playerState.currentPlayer;
 			if (this.currentPlayer !== oldAssignment && this.currentPlayer) {
 				bindHumanPlayer(p, this.currentPlayer, (actorId) => { this.selectedActorId = actorId }, () => this.selectedActorId);
 			}
@@ -37,7 +37,7 @@ export default class Game {
 		p.image(this.mapGraphicsContext, 0, 0);
 		let pathOrigin: CoordPair | undefined = undefined;
 		const selectedActor = this.selectedActorId ? Store.getState().actorState.actorDict[this.selectedActorId] : undefined;
-		if (selectedActor && selectedActor.ownerId === Store.getState().actorState.currentPlayer) {
+		if (selectedActor && selectedActor.ownerId === Store.getState().playerState.currentPlayer) {
 			pathOrigin = selectedActor.status.location;
 		}
 		if (Store.getState().mapState.mapCells.length > 0 && pathOrigin) {
@@ -54,7 +54,7 @@ export default class Game {
 			if (a.id === this.selectedActorId) {
 				return 2;
 			}
-			if (a.ownerId === Store.getState().actorState.currentPlayer) {
+			if (a.ownerId === Store.getState().playerState.currentPlayer) {
 				return 1;
 			}
 			return 0;

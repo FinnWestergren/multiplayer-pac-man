@@ -72,6 +72,6 @@ const checkForActorInCell = (tile: CoordPair) => {
     const actors = Object.values(Store.getState().actorState.actorDict)
     .filter(a => CoordPairUtils.equalPairs(tile, CoordPairUtils.snappedPair(a.status.location)));
     if (actors.length === 0) return;
-    const ownedActors = actors.filter(a => a.ownerId === Store.getState().actorState.currentPlayer);
+    const ownedActors = actors.filter(a => a.ownerId === Store.getState().playerState.currentPlayer);
     return ownedActors[0] ?? actors[0];
 }
