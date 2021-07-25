@@ -3,7 +3,8 @@
         "install-everything": "npm i && cd ./core && npm i && cd ../server && npm i && cd ../client && npm i",
         "build": "cd ./core && npm run build",
         "start-client": "cd ./client && npm install core && npm run start",
-        "start-server": "cd ./server && npm install core && npm run host",
+        "kill-server": "npx kill-port 8080",
+        "start-server": "npm run kill-server && cd ./server && npm install core && npm run host",
         "start": "start npm run start-server && npm run start-client",
         "all": "npm run install-everything && npm run build && npm run start"
     }
