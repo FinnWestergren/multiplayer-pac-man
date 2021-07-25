@@ -38,7 +38,7 @@ export default class Game {
 		let pathOrigin: CoordPair | undefined = undefined;
 		const selectedActor = this.selectedActorId ? Store.getState().actorState.actorDict[this.selectedActorId] : undefined;
 		if (selectedActor && selectedActor.ownerId === Store.getState().playerState.currentPlayer) {
-			pathOrigin = selectedActor.status.location;
+			pathOrigin = selectedActor!.status.location;
 		}
 		if (Store.getState().mapState.mapCells.length > 0 && pathOrigin) {
 			const mousedOverCell = this.mousedOverCell(p)
@@ -65,28 +65,32 @@ export default class Game {
 	private drawActor = (p: p5, actor: Actor) => {
 		const location = actor.status.location;
 		const cellSize = Store.getState().mapState.cellDimensions.cellSize;
-		const drawShape = (actorSize: number) => {
+		const drawShape = () => {
+			const actorSize = ActorType.CHAMPION ? this.champSize : this.champSize * 0.66
 			p.beginShape(p.QUADS);
 			p.vertex(0, -actorSize * 0.5); // tip
 			p.vertex(actorSize * 0.3, actorSize * 0.3); // rightwing
 			p.vertex(0, 0); // nut
 			p.vertex(-actorSize * 0.3, actorSize * 0.3); //leftwing
 			p.endShape(p.CLOSE);}
-		const color = `#${actor.ownerId.substr(0, 6)}`;
+		const IDcolor = p.color(`#${actor.ownerId.substr(0, 6)}`);
+		const isFriendly = actor.ownerId === Store.getState().playerState.currentPlayer;
+		const factionColor = isFriendly ? p.color('#edf5f7') : p.color('#cc5b47')
 		p.push();
 		p.translate((location.x + 0.5) * cellSize, (location.y + 0.65) * cellSize);
 		p.angleMode(p.DEGREES);
 		p.rotate(Math.log2(actor.status.orientation) * 90); // *chefs kiss*
+		const isSelected = this.selectedActorId === actor.id;
 		p.noFill();
-		p.stroke(color);
-		if (this.selectedActorId === actor.id) {
-			this.makeItLookSick(p, () => {
-				drawShape(actor.type === ActorType.CHAMPION ? this.champSize : this.champSize * 0.66)
-			})
+		p.strokeWeight(isSelected ? 4 : 3);
+		p.stroke(factionColor);
+		drawShape();
+		p.strokeWeight(isSelected ? 2 : 1);
+		p.stroke(IDcolor);
+		if (isSelected) {
+			p.fill(factionColor);
 		}
-		else {
-			drawShape(actor.type === ActorType.CHAMPION ? this.champSize : this.champSize * 0.66)
-		}
+		drawShape()
 		p.pop();
 	};
 
