@@ -1,4 +1,8 @@
-import { Reducer } from "redux";
+import { ActorStateAction, MapStateAction, PlayerStateAction } from "core/static/types";
+import { Reducer, Store } from "redux";
+import { RootState } from "../containers/GameWrapper";
+
+type ClientStore = Store<RootState, ClientStateAction | MapStateAction | ActorStateAction | PlayerStateAction>;
 
 export enum ClientStateActionTypes {
     SET_INPUT_MODE
@@ -32,3 +36,5 @@ export const clientStateReducer: Reducer<ClientState, ClientStateAction> = (
     }
     return draft;
 };
+
+export const setInputMode = (store: ClientStore, inputMode: InputMode) => store.dispatch({ type: ClientStateActionTypes.SET_INPUT_MODE, payload: inputMode })

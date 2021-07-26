@@ -12,7 +12,7 @@ const initialState: ActorState = {
 export const actorStateReducer: Reducer<ActorState, ActorStateAction> = (state: ActorState = initialState, action: ActorStateAction) => {
     const draft = { ...state };
     switch (action.type) {
-        case ActorStateActionTypes.SET_GAME_STATE:
+        case ActorStateActionTypes.SET_ACTOR_STATE:
             return action.payload;
         case ActorStateActionTypes.SET_ACTOR_STATUS:
             draft.actorDict[action.payload.actorId].status = action.payload.status;
@@ -46,7 +46,7 @@ export const actorStateReducer: Reducer<ActorState, ActorStateAction> = (state: 
 };
 
 export const setActorState = (store: ReduxStore, state: ActorState) => 
-    store.dispatch({ type: ActorStateActionTypes.SET_GAME_STATE, payload: state });
+    store.dispatch({ type: ActorStateActionTypes.SET_ACTOR_STATE, payload: state });
 
 export const updateActorStatus = (store: ReduxStore, actorId: string, newStatus: ActorStatus) => 
     store.dispatch({ type: ActorStateActionTypes.SET_ACTOR_STATUS, payload: { actorId, status: newStatus } });
@@ -54,7 +54,5 @@ export const updateActorStatus = (store: ReduxStore, actorId: string, newStatus:
 export const addActor = (store: ReduxStore, ownerId: string, actorId: string, actorType: ActorType, location: CoordPair) => 
     store.dispatch({ type: ActorStateActionTypes.ADD_ACTOR, payload: { ownerId, actorType, location, actorId }});
 
-export const removePlayerActors = (store: ReduxStore, playerId: string) => {
+export const removePlayerActors = (store: ReduxStore, playerId: string) => 
     store.dispatch({ type: ActorStateActionTypes.REMOVE_ACTORS_FOR_PLAYER, payload: playerId });
-
-}

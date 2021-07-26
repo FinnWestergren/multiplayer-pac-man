@@ -30,7 +30,6 @@ export default class Cell {
     }
 
     public draw: (p: p5.Graphics) => void = (p) => {
-        console.log(ClientStore.getState().clientState.inputMode);
         p.push();
         p.translate(this.location.x, this.location.y);
         p.textAlign("center", "center");

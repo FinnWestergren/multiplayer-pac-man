@@ -1,7 +1,7 @@
-import { ReduxStore, StampedInput, updateActorStatus, Dictionary, CoordPair, ActorStatus, addPlayer, CELLS_PER_MILLISECOND } from "..";
+import { ReduxStore, StampedInput, updateActorStatus, Dictionary, CoordPair, ActorStatus, CELLS_PER_MILLISECOND } from "..";
 import { addActor } from "../ducks";
 import { moveActorAlongPath } from "../game/actorUpdater";
-import { ActorType, CoordPairUtils, InputType } from "../types";
+import { InputType } from "../types";
 
 export const handlePlayerInput = (store: ReduxStore, playerId: string, stampedInput: StampedInput) => {
     switch(stampedInput.input.type) {

@@ -8,11 +8,12 @@ import { InputMode } from "../ducks/clientState";
 
 export default class Game {
 	private currentPlayer?: string;
-	private selectedActorId?: string;
+	private selectedActorId: string | null;
 
 	private mapGraphicsContext: p5.Graphics;
 
 	public constructor(p: p5) {
+		this.selectedActorId = null;
 		this.mapGraphicsContext = p.createGraphics(p.width, p.height);
 		this.mapGraphicsContext.pixelDensity(1);
 
@@ -39,9 +40,12 @@ export default class Game {
 			pathOrigin = selectedActor!.status.location;
 		}
 		const mousedOverCell = this.mousedOverCell(p);
-		const withinBounds = mousedOverCell.x >= 0 && mousedOverCell.x < ClientStore.getState().mapState.mapCells[0].length
-			&& mousedOverCell.y >= 0 && mousedOverCell.y < ClientStore.getState().mapState.mapCells.length;
-		if (mousedOverCell && withinBounds) {
+		const withinBounds = 
+		mousedOverCell.x >= 0 && 
+		mousedOverCell.y >= 0 && 
+		mousedOverCell.y < ClientStore.getState().mapState.mapCells.length && 
+		mousedOverCell.x < ClientStore.getState().mapState.mapCells[0].length;
+		if (withinBounds) {
 			if (ClientStore.getState().mapState.mapCells.length > 0 && pathOrigin) {
 				const { totalDist, path } = dijkstras(CoordPairUtils.roundedPair(pathOrigin), mousedOverCell, junctionSelector(ClientStore.getState().mapState));
 				this.drawPath(p, path, totalDist);

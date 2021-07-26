@@ -2,7 +2,7 @@ import http from 'http';
 import nodeStatic from 'node-static';
 import crypto from 'crypto';
 import { handleMessage, getCurrentMap } from './serverExtensions';
-import { ServerMessage, ClientMessage, MessageType, removePlayer, runGame, generateGuid, initPlayer, gameReducer, addPlayer } from "core";
+import { ServerMessage, ClientMessage, MessageType, removePlayer, runGame, generateGuid, gameReducer, addPlayer } from "core";
 import { createStore } from "redux";
 import {Socket} from "net"
 import { serverStateReducer } from './ducks/serverState';

@@ -58,7 +58,7 @@ export enum ActorStateActionTypes {
     SET_ACTOR_STATUS = "SET_ACTOR_STATUS",
     ADD_ACTOR = "ADD_ACTOR",
     REMOVE_ACTOR = "REMOVE_ACTOR",
-    SET_GAME_STATE = "SET_GAME_STATE",
+    SET_ACTOR_STATE = "SET_ACTOR_STATE",
     REMOVE_ACTORS_FOR_PLAYER = "REMOVE_ACTORS_FOR_PLAYER"
 };
 
@@ -67,7 +67,7 @@ export type ActorStateAction =
     { type: ActorStateActionTypes.ADD_ACTOR; payload: { ownerId: string, actorId: string, actorType: ActorType, location: CoordPair } } |
     { type: ActorStateActionTypes.REMOVE_ACTOR; payload: string } |
     { type: ActorStateActionTypes.REMOVE_ACTORS_FOR_PLAYER; payload: string } |
-    { type: ActorStateActionTypes.SET_GAME_STATE; payload: ActorState }
+    { type: ActorStateActionTypes.SET_ACTOR_STATE; payload: ActorState }
 /* #endregion ActorTypes  */
 /* #region PlayerTypes  */
     export type PlayerState = {

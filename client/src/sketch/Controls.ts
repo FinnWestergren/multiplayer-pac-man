@@ -1,10 +1,10 @@
 import p5 from "p5";
-import { CoordPair, CoordPairUtils } from "core";
+import { ActorType, CoordPair, CoordPairUtils } from "core";
 import { ClientStore } from "../containers/GameWrapper";
-import { moveUnit } from "../utils/clientActions";
-import { InputMode } from "../ducks/clientState";
+import { createUnit, moveUnit } from "../utils/clientActions";
+import { InputMode, setInputMode } from "../ducks/clientState";
 
-export const bindHumanPlayer = (p: p5, selectActor: (actorId?: string) => void, getSelectedActorId: () => string | undefined) => {
+export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => void, getSelectedActorId: () => string | null) => {
     const oneOverCellSize = 1 / ClientStore.getState().mapState.cellDimensions.cellSize;
     const cells = ClientStore.getState().mapState.mapCells;
     if (!cells || cells.length === 0) {
@@ -37,11 +37,9 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId?: string) => void, 
         const clickedTile = getClickedTile(mouse);
         if (!clickedTile) {
             switch(ClientStore.getState().clientState.inputMode) {
-                case InputMode.PLACE_OUTPOST:
-                    tryPlaceOutpost();
                 case InputMode.STANDARD:
                 default:
-                    selectActor();
+                    selectActor(null);
                     return;
             }
             
@@ -50,7 +48,14 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId?: string) => void, 
             moveUnit(actorId, clickedTile);
         }
         else {
-            selectActor(checkForActorInCell(clickedTile)?.id);
+            switch(ClientStore.getState().clientState.inputMode) {
+                case InputMode.PLACE_OUTPOST:
+                    createUnit(clickedTile, ActorType.OUTPOST);
+                    setInputMode(ClientStore, InputMode.STANDARD);
+                    break;
+                case InputMode.STANDARD:
+                selectActor(checkForActorInCell(clickedTile)?.id ?? null);
+            }
         }
     }
         
