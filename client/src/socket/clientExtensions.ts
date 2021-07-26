@@ -7,13 +7,13 @@ import {
     handleStateCorrection,
     StampedInput,
     refreshMap,
-    initPlayer,
     setActorState,
     setPlayerMinerals,
-    setCurrentPlayer
+    setCurrentPlayer,
+    addPlayer
 } from "core";
 
-import { ClientSocket, Store } from "../containers/GameWrapper";
+import { ClientSocket, CoreStore } from "../containers/GameWrapper";
 
 let lastPing = 0;
 
@@ -25,30 +25,30 @@ export function handleMessage(message: ServerMessage): void {
             sendLatencyUpdate(ping);
             return;
         case MessageType.INIT_PLAYER:
-            setCurrentPlayer(Store, message.payload.currentPlayerId);
-            setActorState(Store, message.payload.actorState);
+            setCurrentPlayer(CoreStore, message.payload.currentPlayerId);
+            setActorState(CoreStore, message.payload.actorState);
             return;
         case MessageType.MAP_RESPONSE:
-            refreshMap(Store, message.payload);
+            refreshMap(CoreStore, message.payload);
             return;
         case MessageType.ADD_PLAYER:
-            initPlayer(Store, message.payload.playerId, message.payload.championId);
+            addPlayer(CoreStore, message.payload);
             return;
         case MessageType.REMOVE_PLAYER:
-            removePlayer(Store, message.payload);
+            removePlayer(CoreStore, message.payload);
             return;
         case MessageType.PLAYER_INPUT:
-            handlePlayerInput(Store, message.payload.playerId, message.payload.input);
+            handlePlayerInput(CoreStore, message.payload.playerId, message.payload.input);
             return;
         case MessageType.INVALID:
             console.error('sent an invalid message to server')
             return;
         case MessageType.STATE_CORRECTION:
-            handleStateCorrection(Store, message.payload);
+            handleStateCorrection(CoreStore, message.payload);
             return;
         case MessageType.SET_PLAYER_MINERALS:
             Object.keys(message.payload).forEach(pId => {
-                setPlayerMinerals(Store, pId, message.payload[pId]);
+                setPlayerMinerals(CoreStore, pId, message.payload[pId]);
             });
             return;
         default:
@@ -75,7 +75,7 @@ export const sendPlayerInput = (playerId: string, input: StampedInput) => {
 
 export const sendPerceptionUpdate = () => { 
     const timeStamp = (new Date()).getTime();
-    const currentState = Store.getState().actorState.actorDict
+    const currentState = CoreStore.getState().actorState.actorDict
     let locationMap = {};
     Object.keys(currentState).forEach(playerId => {
         locationMap = {...locationMap, [playerId]: currentState[playerId].status.location }

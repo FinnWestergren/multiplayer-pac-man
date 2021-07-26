@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Store } from "../containers/GameWrapper";
+import { ClientStore } from "../containers/GameWrapper";
 import {
     CellModifier,
     CoordPair,
@@ -7,6 +7,7 @@ import {
     DirectionUtils,
     junctionSelector,
 } from "core";
+import { InputMode } from "../ducks/clientState";
 
 export default class Cell {
     private cellModifier: CellModifier;
@@ -17,11 +18,11 @@ export default class Cell {
     private cellType: Direction;
 
     public constructor(x: number, y: number) {
-        this.cellType = Store.getState().mapState.mapCells[y][x];
-        this.cellModifier = Store.getState().mapState.cellModifiers[y][x];
+        this.cellType = ClientStore.getState().mapState.mapCells[y][x];
+        this.cellModifier = ClientStore.getState().mapState.cellModifiers[y][x];
         this.gridCoords = { x, y };
-        this.halfSize = Store.getState().mapState.cellDimensions.cellSize * 0.5;
-        this.cellSize = Store.getState().mapState.cellDimensions.cellSize;
+        this.halfSize = ClientStore.getState().mapState.cellDimensions.cellSize * 0.5;
+        this.cellSize = ClientStore.getState().mapState.cellDimensions.cellSize;
         this.location = {
             x: this.halfSize + x * this.cellSize,
             y: this.halfSize + y * this.cellSize,
@@ -29,6 +30,7 @@ export default class Cell {
     }
 
     public draw: (p: p5.Graphics) => void = (p) => {
+        console.log(ClientStore.getState().clientState.inputMode);
         p.push();
         p.translate(this.location.x, this.location.y);
         p.textAlign("center", "center");
@@ -36,16 +38,14 @@ export default class Cell {
         // this.drawDebugNodeOverlay(p);
         this.drawWalls(p);
         this.drawModifier(p);
-        // this.drawShadedCellOnHover(p);
+        ClientStore.getState().clientState.inputMode === InputMode.PLACE_OUTPOST && this.drawShadedCellOnHover(p);
         p.pop();
     };
 
-    private drawDebugText(p: p5) {
-        p.text(`(${this.gridCoords.x}, ${this.gridCoords.y})`, 0, 0);
-    }
+    private drawDebugText = (p: p5) => p.text(`(${this.gridCoords.x}, ${this.gridCoords.y})`, 0, 0);
 
     private drawDebugNodeOverlay(p: p5) {
-        const juncs = junctionSelector(Store.getState().mapState);
+        const juncs = junctionSelector(ClientStore.getState().mapState);
         if (
             juncs &&
             juncs[this.gridCoords.y] &&
@@ -104,9 +104,9 @@ export default class Cell {
         }
     };
 
-    private drawShadedCellOnHover(p: p5) {
+    public drawShadedCellOnHover(p: p5) {
         if (this.withinBounds(p.mouseX, p.mouseY)) {
-            p.fill(255, 0, 0, 20);
+            p.fill(255, 0, 0, 255);
             p.noStroke();
             p.rect(
                 -this.halfSize,

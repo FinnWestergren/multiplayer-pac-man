@@ -16,5 +16,6 @@ export type ActorStatus = {
 
 export enum ActorType {
     CHAMPION = "CHAMPION",
-    MINER = "MINER"
+    MINER = "MINER",
+    OUTPOST = "OUTPOST"
 };

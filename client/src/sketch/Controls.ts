@@ -1,20 +1,16 @@
 import p5 from "p5";
 import { CoordPair, CoordPairUtils } from "core";
-import { Store } from "../containers/GameWrapper";
+import { ClientStore } from "../containers/GameWrapper";
 import { moveUnit } from "../utils/clientActions";
+import { InputMode } from "../ducks/clientState";
 
-const KeyCodeOne = 49;
-const KeyCodeTwo = 50;
-const KeyCodeThree = 51;
-
-export const bindHumanPlayer = (p: p5, playerId: string, selectActor: (actorId?: string) => void, selectedActor: () => string | undefined) => {
-    const oneOverCellSize = 1 / Store.getState().mapState.cellDimensions.cellSize;
-    const cells = Store.getState().mapState.mapCells;
+export const bindHumanPlayer = (p: p5, selectActor: (actorId?: string) => void, getSelectedActorId: () => string | undefined) => {
+    const oneOverCellSize = 1 / ClientStore.getState().mapState.cellDimensions.cellSize;
+    const cells = ClientStore.getState().mapState.mapCells;
     if (!cells || cells.length === 0) {
         return;
     }
     const max_y = cells.length, max_x = cells[0].length;
-    const actors = Store.getState().actorState.actorOwnershipDict[playerId];
 
     const getClickedTile = (mouse: CoordPair) => {
         const element = document.getElementById("app-p5_container");
@@ -28,21 +24,6 @@ export const bindHumanPlayer = (p: p5, playerId: string, selectActor: (actorId?:
         }
     }
 
-    p.keyPressed = () => {
-        if (p.keyCode === KeyCodeOne && actors.length > 0) {
-            selectActor(actors[0]);
-        }
-        if (p.keyCode === KeyCodeTwo && actors.length > 1) {
-            selectActor(actors[1]);
-        }
-        if (p.keyCode === KeyCodeThree && actors.length > 2) {
-            selectActor(actors[2]);
-        }
-        if (p.keyCode === p.ESCAPE) {
-            selectActor();
-        }
-    }
-
     window.oncontextmenu = (e: MouseEvent) => {
         mouseClicked(e);
         return false;
@@ -52,11 +33,18 @@ export const bindHumanPlayer = (p: p5, playerId: string, selectActor: (actorId?:
     
     const mouseClicked = (e: MouseEvent) => { 
         const mouse = {x: e.clientX, y: e.clientY} // can't use p.mouse because of scrolling / changing screen sizes
-        const actorId = selectedActor();
+        const actorId = getSelectedActorId();
         const clickedTile = getClickedTile(mouse);
         if (!clickedTile) {
-            selectActor();
-            return;
+            switch(ClientStore.getState().clientState.inputMode) {
+                case InputMode.PLACE_OUTPOST:
+                    tryPlaceOutpost();
+                case InputMode.STANDARD:
+                default:
+                    selectActor();
+                    return;
+            }
+            
         }
         if (e.button === 2 && actorId) {
             moveUnit(actorId, clickedTile);
@@ -69,9 +57,9 @@ export const bindHumanPlayer = (p: p5, playerId: string, selectActor: (actorId?:
 };
 
 const checkForActorInCell = (tile: CoordPair) => {
-    const actors = Object.values(Store.getState().actorState.actorDict)
+    const actors = Object.values(ClientStore.getState().actorState.actorDict)
     .filter(a => CoordPairUtils.equalPairs(tile, CoordPairUtils.snappedPair(a.status.location)));
     if (actors.length === 0) return;
-    const ownedActors = actors.filter(a => a.ownerId === Store.getState().playerState.currentPlayer);
+    const ownedActors = actors.filter(a => a.ownerId === ClientStore.getState().playerState.currentPlayer);
     return ownedActors[0] ?? actors[0];
 }

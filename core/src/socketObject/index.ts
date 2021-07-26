@@ -31,7 +31,7 @@ export type ClientMessage =
 
 export type ServerMessage = 
     { type: MessageType.INIT_PLAYER, payload: { currentPlayerId: string, actorState: ActorState } }|
-    { type: MessageType.ADD_PLAYER, payload: { playerId: string; championId: string } } |
+    { type: MessageType.ADD_PLAYER, payload: string; } |
     { type: MessageType.REMOVE_PLAYER, payload: string } |
     { type: MessageType.PONG } |
     { type: MessageType.MAP_RESPONSE, payload: MapResponse } |

@@ -27,8 +27,3 @@ export const handleStateCorrection = (store: ReduxStore, payload: { soft: Dictio
         updateActorStatus(store, actorId, newState);
     })
 }
-
-export const initPlayer = (store: ReduxStore, playerId: string, championId: string) => {
-    addPlayer(store, playerId);
-    addActor(store, playerId, championId, ActorType.CHAMPION, CoordPairUtils.zeroPair);
-}

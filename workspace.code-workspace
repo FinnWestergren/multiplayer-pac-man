@@ -8,12 +8,15 @@
 		"files.exclude": {
 			"static": true,
 			"*/static": true,
+			"*/build": true,
 			"node_modules": true,
 			"*/node_modules": true,
-			".git*": false,
-			"*.cmd": false,
+			".git*": true,
 			"*/package-lock.json": true,
-			"client/public": true
+			"client/public": true,
+			"*/.babelrc": true,
+			"*/.eslintrc.js": true,
+			"*/tsconfig.json": true,
 		}
 	}
 }
