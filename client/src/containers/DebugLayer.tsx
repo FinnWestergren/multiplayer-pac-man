@@ -42,6 +42,12 @@ const DebugLayer: FunctionComponent<StateProps & DispatchProps> = ({currentPlaye
             <DebugButton
                 label='Create Outpost'
                 onClick={() => setPlaceUnitMode(ActorType.OUTPOST)} />
+            <DebugButton
+                label='Create Miner'
+                onClick={() => setPlaceUnitMode(ActorType.MINER)} />
+            <DebugButton
+                label='Create Champion'
+                onClick={() => setPlaceUnitMode(ActorType.CHAMPION)} />
         </ControllerGrid>
     );
 };
@@ -51,7 +57,7 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 const mapDispatchToProps = {
-    setPlaceUnitMode: (actorType: ActorType | null) => ({ type: ClientStateActionTypes.SET_INPUT_MODE, payload: actorType === ActorType.OUTPOST ? InputMode.PLACE_OUTPOST : InputMode.STANDARD })
+    setPlaceUnitMode: (actorType: ActorType | null) => ({ type: ClientStateActionTypes.SET_INPUT_MODE, payload: { inputMode: InputMode.PLACE_UNIT, unitType: actorType } })
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DebugLayer);

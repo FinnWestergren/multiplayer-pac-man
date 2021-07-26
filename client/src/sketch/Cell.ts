@@ -37,7 +37,7 @@ export default class Cell {
         // this.drawDebugNodeOverlay(p);
         this.drawWalls(p);
         this.drawModifier(p);
-        ClientStore.getState().clientState.inputMode === InputMode.PLACE_OUTPOST && this.drawShadedCellOnHover(p);
+        ClientStore.getState().clientState.inputMode === InputMode.PLACE_UNIT && this.drawShadedCellOnHover(p);
         p.pop();
     };
 

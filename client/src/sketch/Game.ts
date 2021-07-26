@@ -50,10 +50,10 @@ export default class Game {
 				const { totalDist, path } = dijkstras(CoordPairUtils.roundedPair(pathOrigin), mousedOverCell, junctionSelector(ClientStore.getState().mapState));
 				this.drawPath(p, path, totalDist);
 			}
-			if (ClientStore.getState().clientState.inputMode === InputMode.PLACE_OUTPOST) {
+			if (ClientStore.getState().clientState.inputMode === InputMode.PLACE_UNIT) {
 				const center = this.centerOfMousedOver(p);
 				p.fill(255);
-				p.ellipse(center[0], center[1], 20);
+				p.ellipse(center.x, center.y, 20);
 			}
 		}
 		
@@ -70,10 +70,13 @@ export default class Game {
 		.forEach(actor => drawActor(p, actor, this.selectedActorId === actor.id));
 	};
 
-	private centerOfMousedOver = (p: p5) => {
+	private centerOfCell = (cell: CoordPair) => {
 		const cellSize = ClientStore.getState().mapState.cellDimensions.cellSize;
-		const center = (cell: CoordPair) => [cellSize * cell.x + cellSize * 0.5, cellSize * cell.y + cellSize * 0.5]
-		return center(this.mousedOverCell(p));
+		return {x: cellSize * cell.x + cellSize * 0.5, y: cellSize * cell.y + cellSize * 0.5}
+	} 
+
+	private centerOfMousedOver = (p: p5) => {
+		return this.centerOfCell(this.mousedOverCell(p));
 	}
 
 
@@ -81,10 +84,9 @@ export default class Game {
 		const textOffset = 10;
 		this.makeItLookSick(p, () => {
 			p.textAlign(p.CENTER);
-			p.text(path.length === 0 ? 'X' : totalDist, this.centerOfMousedOver(p)[0] + textOffset, this.centerOfMousedOver(p)[1] - textOffset);
+			p.text(path.length === 0 ? 'X' : totalDist, this.centerOfMousedOver(p).x + textOffset, this.centerOfMousedOver(p).y - textOffset);
 			p.beginShape();
-			// @ts-ignore
-			path.forEach(cell => p.vertex(...center(cell)));
+			path.forEach(cell => p.vertex(this.centerOfCell(cell).x, this.centerOfCell(cell).y));
 			p.endShape();
 		})
 	}

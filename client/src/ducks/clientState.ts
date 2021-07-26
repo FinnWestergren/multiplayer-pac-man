@@ -1,4 +1,4 @@
-import { ActorStateAction, MapStateAction, PlayerStateAction } from "core/static/types";
+import { ActorStateAction, ActorType, MapStateAction, PlayerStateAction } from "core/static/types";
 import { Reducer, Store } from "redux";
 import { RootState } from "../containers/GameWrapper";
 
@@ -10,15 +10,17 @@ export enum ClientStateActionTypes {
 
 export enum InputMode {
     STANDARD,
-    PLACE_OUTPOST
+    PLACE_UNIT
 }
 
 export type ClientState = {
-    inputMode: InputMode
+    inputMode: InputMode;
+    placementUnitType?: ActorType;
 };
 
 
-export type ClientStateAction = { type: ClientStateActionTypes.SET_INPUT_MODE; payload: InputMode };
+export type ClientStateAction = 
+    { type: ClientStateActionTypes.SET_INPUT_MODE; payload: { inputMode: InputMode, unitType?: ActorType } };
 
 const initialState: ClientState = {
     inputMode: InputMode.STANDARD
@@ -31,10 +33,14 @@ export const clientStateReducer: Reducer<ClientState, ClientStateAction> = (
     const draft = { ...state };
     switch (action.type) {
         case ClientStateActionTypes.SET_INPUT_MODE:
-            draft.inputMode = action.payload;
+            draft.inputMode = action.payload.inputMode;
+            if (action.payload.inputMode === InputMode.PLACE_UNIT) {
+                draft.placementUnitType = action.payload.unitType
+            }
             break;
     }
     return draft;
 };
 
-export const setInputMode = (store: ClientStore, inputMode: InputMode) => store.dispatch({ type: ClientStateActionTypes.SET_INPUT_MODE, payload: inputMode })
+export const setInputMode = (store: ClientStore, inputMode: InputMode, unitType?: ActorType) =>  
+    store.dispatch({ type: ClientStateActionTypes.SET_INPUT_MODE, payload: { inputMode, unitType } });

@@ -44,13 +44,16 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
             }
             
         }
-        if (e.button === 2 && actorId) {
+        if (e.button === 2 && actorId && isMovable(actorId)) {
             moveUnit(actorId, clickedTile);
         }
         else {
             switch(ClientStore.getState().clientState.inputMode) {
-                case InputMode.PLACE_OUTPOST:
-                    createUnit(clickedTile, ActorType.OUTPOST);
+                case InputMode.PLACE_UNIT:
+                    const placementUnitType = ClientStore.getState().clientState.placementUnitType;
+                    if (placementUnitType) {
+                        createUnit(clickedTile, placementUnitType);
+                    }
                     setInputMode(ClientStore, InputMode.STANDARD);
                     break;
                 case InputMode.STANDARD:
@@ -60,6 +63,10 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
     }
         
 };
+
+const isMovable = (actorId: string) => {
+    return ClientStore.getState().actorState.actorDict[actorId].type !== ActorType.OUTPOST;
+}
 
 const checkForActorInCell = (tile: CoordPair) => {
     const actors = Object.values(ClientStore.getState().actorState.actorDict)
