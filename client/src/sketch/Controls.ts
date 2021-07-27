@@ -24,6 +24,7 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
         }
     }
 
+    // right click = left click
     window.oncontextmenu = (e: MouseEvent) => {
         mouseClicked(e);
         return false;
@@ -61,9 +62,9 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
             }
         }
     }
-        
 };
 
+// this will probably evolve over time to something bigger like a "has property" lookup system.
 const isMovable = (actorId: string) => {
     return ClientStore.getState().actorState.actorDict[actorId].type !== ActorType.OUTPOST;
 }

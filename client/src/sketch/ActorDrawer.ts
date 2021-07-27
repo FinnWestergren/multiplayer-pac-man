@@ -1,8 +1,8 @@
-import { Actor, ActorType } from "core";
+import { Actor, ActorType, Direction } from "core";
 import p5 from "p5";
 import { ClientStore } from "../containers/GameWrapper";
 
-const CHAMP_SIZE = 0.7;
+const CHAMP_SIZE = 0.6;
 const MINER_SIZE = 0.4;
 const OUTPOST_SIZE = 0.7;
 
@@ -13,12 +13,11 @@ export const drawActor = (p: p5, actor: Actor, isSelected: boolean) => {
     const isFriendly = actor.ownerId === ClientStore.getState().playerState.currentPlayer;
     const factionColor = isFriendly ? p.color('#edf5f7') : p.color('#cc5b47')
 
-    const drawMethod = getDrawMethod(p, actor.type, cellSize);
+    const drawMethod = getDrawMethod(p, actor, cellSize);
     if (drawMethod) {
         p.push();
         p.translate((location.x + 0.5) * cellSize, (location.y + 0.5) * cellSize);
         p.angleMode(p.DEGREES);
-        p.rotate(Math.log2(actor.status.orientation) * 90); // *chefs kiss*
         p.noFill();
         p.strokeWeight(isSelected ? 4 : 3);
         p.stroke(factionColor);
@@ -33,21 +32,23 @@ export const drawActor = (p: p5, actor: Actor, isSelected: boolean) => {
     }
 };
 
-const getDrawMethod = (p: p5, actorType: ActorType, cellSize: number) => {
-    switch(actorType) {
+const getDrawMethod = (p: p5, actor: Actor, cellSize: number) => {
+    switch(actor.type) {
         case ActorType.CHAMPION:
-            return () => drawYWing(p, cellSize * CHAMP_SIZE);
+            return () => drawYWing(p, actor.status.orientation, cellSize * CHAMP_SIZE, cellSize);
         case ActorType.MINER:
-            return () => drawYWing(p, cellSize * MINER_SIZE);
+            return () => drawYWing(p, actor.status.orientation, cellSize * MINER_SIZE, cellSize);
         case ActorType.OUTPOST:
-            return () => drawOutpost(p, cellSize * OUTPOST_SIZE);
+            return () => drawOutpost(p, cellSize * OUTPOST_SIZE, cellSize);
         default: return null; 
     }
 }
-
-const drawYWing = (p: p5, actorSize: number) => {
+// x * c = 0.15
+const drawYWing = (p: p5, orientation: Direction, actorSize: number, cellSize: number) => {
+    console.log(0.0025 * cellSize);
     p.push();
-    p.translate(0, 0.15);
+    p.translate(0.07 * cellSize, 0.07 * cellSize);
+    p.rotate(Math.log2(orientation) * 90); // *chefs kiss*
     p.beginShape(p.QUADS);
     p.vertex(0, -actorSize * 0.5); // tip
     p.vertex(actorSize * 0.3, actorSize * 0.3); // rightwing
@@ -57,6 +58,6 @@ const drawYWing = (p: p5, actorSize: number) => {
     p.pop();
 }
 
-const drawOutpost = (p: p5, actorSize: number) => {
-    p.ellipse(0, 0, actorSize);
+const drawOutpost = (p: p5, actorSize: number, cellSize: number) => {
+    p.ellipse(0.07 * cellSize, 0.07 * cellSize, actorSize);
 }
