@@ -18,7 +18,6 @@ export const updateActors = () => Object.keys(store.getState().actorState.actorD
     }
     const outpostList = Object.values(store.getState().actorState.actorDict).filter(a => a.type === ActorType.OUTPOST && actor.ownerId === a.ownerId);
     const isOverAnOutpost = outpostList.some(o => CoordPairUtils.equalPairs(o.status.location, roundedLocation));
-    console.log(isOverAnOutpost, actor.status.mineralHoldings)
     if (isOverAnOutpost && actor.status.mineralHoldings) {
         const mineralHoldings = actor.status.mineralHoldings;
         const newStatus = {...actor.status, mineralHoldings: 0};
@@ -38,7 +37,7 @@ export const getNextDestinationAlongPath: (dist: number, actorId: string) => Act
     const status = store.getState().actorState.actorDict[actorId].status;
     if (dist === 0 || !status.destination) return null;
     if (CoordPairUtils.equalPairs(status.location, status.destination)) {
-        return { ...status, destination: status.patrolDestination, patrolDestination: status.destination }; // simple way to flip it around
+        return { ...status, destination: status.patrolDestination, patrolDestination: status.destination }; // simple way to flip it around. if patrolDest is undefined, we still get what we want
     }
     const path = checkCurrentPathStatus(status, getActorPath(store.getState(), actorId).path); 
     let nextLocation = CoordPairUtils.snappedPair(status.location);

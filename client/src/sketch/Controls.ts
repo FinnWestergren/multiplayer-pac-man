@@ -88,7 +88,7 @@ const isMovable = (actorId: string) => {
 
 const checkForActorInCell = (tile: CoordPair) => {
     const actors = Object.values(ClientStore.getState().actorState.actorDict)
-    .filter(a => CoordPairUtils.equalPairs(tile, CoordPairUtils.snappedPair(a.status.location)));
+    .filter(a => CoordPairUtils.equalPairs(tile, CoordPairUtils.roundedPair(a.status.location)));
     if (actors.length === 0) return;
     const ownedActors = actors.filter(a => a.ownerId === ClientStore.getState().playerState.currentPlayer);
     return ownedActors[0] ?? actors[0];
