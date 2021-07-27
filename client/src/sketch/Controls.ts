@@ -99,6 +99,6 @@ const findNearestOwnedOutpost = (tile: CoordPair) => {
     const outpostList = 
         Object.values(ClientStore.getState().actorState.actorDict)
         .filter(a => a.ownerId === ClientStore.getState().playerState.currentPlayer && a.type === ActorType.OUTPOST)
-        .sort((a,b) => distCalc(b.status.location) - distCalc(a.status.location));
+        .sort((a,b) => distCalc(a.status.location) - distCalc(b.status.location));
     return outpostList.length > 0 ? outpostList[0].status.location : null;
 }
