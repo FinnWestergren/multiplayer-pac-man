@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { ActorType, CoordPair, CoordPairUtils } from "core";
+import { ActorType, CellModifier, CoordPair, CoordPairUtils, dijkstras, junctionSelector } from "core";
 import { ClientStore } from "../containers/GameWrapper";
 import { createUnit, moveUnit } from "../utils/clientActions";
 import { InputMode, setInputMode } from "../ducks/clientState";
@@ -24,13 +24,13 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
 
     // right click = left click
     window.oncontextmenu = (e: MouseEvent) => {
-        mouseClicked(e);
+        rightClick(e);
         return false;
     }
 
-    p.mouseClicked = (e: MouseEvent) => mouseClicked(e);
+    p.mouseClicked = (e: MouseEvent) => leftClick(e);
     
-    const mouseClicked = (e: MouseEvent) => { 
+    const leftClick = (e: MouseEvent) => { 
         const mouse = {x: e.clientX, y: e.clientY} // can't use p.mouse because of scrolling / changing screen sizes
         const actorId = getSelectedActorId();
         const clickedTile = getClickedTile(mouse);
@@ -43,20 +43,39 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
             }
             
         }
-        if (e.button === 2 && actorId && isMovable(actorId)) {
-            moveUnit(actorId, clickedTile);
+        switch(ClientStore.getState().clientState.inputMode) {
+            case InputMode.PLACE_UNIT:
+                const placementUnitType = ClientStore.getState().clientState.placementUnitType;
+                if (placementUnitType) {
+                    createUnit(clickedTile, placementUnitType);
+                }
+                setInputMode(ClientStore, InputMode.STANDARD);
+                break;
+            case InputMode.STANDARD:
+            selectActor(checkForActorInCell(clickedTile)?.id ?? null);
         }
-        else {
-            switch(ClientStore.getState().clientState.inputMode) {
-                case InputMode.PLACE_UNIT:
-                    const placementUnitType = ClientStore.getState().clientState.placementUnitType;
-                    if (placementUnitType) {
-                        createUnit(clickedTile, placementUnitType);
+    }
+
+    const rightClick = (e: MouseEvent) => {
+        const mouse = {x: e.clientX, y: e.clientY} // can't use p.mouse because of scrolling / changing screen sizes
+        const selectedActorId = getSelectedActorId();
+        if (selectedActorId) {
+            const selectedActor = ClientStore.getState().actorState.actorDict[selectedActorId];
+            const clickedTile = getClickedTile(mouse);
+            if (clickedTile) {
+                const clickedTileType = ClientStore.getState().mapState.cellModifiers[clickedTile.y][clickedTile.x]
+                if (selectedActor.ownerId === ClientStore.getState().playerState.currentPlayer) {
+                    if (selectedActor.type === ActorType.MINER && clickedTileType === CellModifier.MINE) {
+                        const nearestOutpost = findNearestOwnedOutpost(clickedTile);
+                        if (nearestOutpost) {
+                            moveUnit(selectedActorId, clickedTile, nearestOutpost);
+                            return;
+                        }
                     }
-                    setInputMode(ClientStore, InputMode.STANDARD);
-                    break;
-                case InputMode.STANDARD:
-                selectActor(checkForActorInCell(clickedTile)?.id ?? null);
+                    if (isMovable(selectedActorId)) {
+                        moveUnit(selectedActorId, clickedTile);
+                    }
+                }
             }
         }
     }
@@ -73,4 +92,13 @@ const checkForActorInCell = (tile: CoordPair) => {
     if (actors.length === 0) return;
     const ownedActors = actors.filter(a => a.ownerId === ClientStore.getState().playerState.currentPlayer);
     return ownedActors[0] ?? actors[0];
+}
+
+const findNearestOwnedOutpost = (tile: CoordPair) => {
+    const distCalc = (dest: CoordPair) => dijkstras(tile, dest, junctionSelector(ClientStore.getState().mapState)).totalDist;
+    const outpostList = 
+        Object.values(ClientStore.getState().actorState.actorDict)
+        .filter(a => a.ownerId === ClientStore.getState().playerState.currentPlayer && a.type === ActorType.OUTPOST)
+        .sort((a,b) => distCalc(b.status.location) - distCalc(a.status.location));
+    return outpostList.length > 0 ? outpostList[0].status.location : null;
 }

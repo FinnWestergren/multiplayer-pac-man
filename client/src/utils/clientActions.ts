@@ -2,7 +2,7 @@ import { handlePlayerInput, CoordPair, InputType, Input, ActorType, generateGuid
 import { CoreStore } from "../containers/GameWrapper";
 import { sendPlayerInput } from "../socket/clientExtensions";
 
-export const moveUnit = (actorId: string, destination: CoordPair) => {
+export const moveUnit = (actorId: string, destination: CoordPair, patrolDestination?: CoordPair) => {
 	const playerId = CoreStore.getState().playerState.currentPlayer;
 	const origin = CoreStore.getState().actorState.actorDict[actorId]?.status.location;
 	if (!origin || !playerId) return; // probably should do some error reporting or something someday
@@ -12,7 +12,8 @@ export const moveUnit = (actorId: string, destination: CoordPair) => {
 		type: InputType.MOVE_UNIT, 
 		destination, 
 		origin,
-		actorId
+		actorId,
+		patrolDestination
 	};
 
 	const stampedInput = {
