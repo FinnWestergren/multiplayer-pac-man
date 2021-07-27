@@ -32,7 +32,6 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
     
     const leftClick = (e: MouseEvent) => { 
         const mouse = {x: e.clientX, y: e.clientY} // can't use p.mouse because of scrolling / changing screen sizes
-        const actorId = getSelectedActorId();
         const clickedTile = getClickedTile(mouse);
         if (!clickedTile) {
             switch(ClientStore.getState().clientState.inputMode) {
@@ -74,6 +73,7 @@ export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => 
                     }
                     if (isMovable(selectedActorId)) {
                         moveUnit(selectedActorId, clickedTile);
+                        return;
                     }
                 }
             }
