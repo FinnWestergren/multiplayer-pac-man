@@ -11,7 +11,6 @@ import {
     ActorStatus,
     Direction,
     CellModifier,
-    setPlayerMinerals,
 } from "core";
 import {
     Store,
@@ -27,10 +26,7 @@ const snapOverrideTriggerDist = 0.8;
 export const handleMessage = (message: ClientMessage, fromPlayer: string) => {
     switch (message.type) {
         case MessageType.PING:
-            const updatedMinerals = (Store.getState().playerState.playerMineralsDict[fromPlayer] ?? 0) + 100;
-            setPlayerMinerals(Store, fromPlayer, updatedMinerals);
             writeToSinglePlayer({ type: MessageType.PONG }, fromPlayer);
-            writeToSinglePlayer({ type: MessageType.SET_PLAYER_MINERALS, payload: {[fromPlayer]: updatedMinerals} }, fromPlayer);
             return;
         case MessageType.MAP_REQUEST:
             writeToSinglePlayer(

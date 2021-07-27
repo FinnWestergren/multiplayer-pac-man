@@ -1,4 +1,4 @@
-import { Actor, ActorType, Direction } from "core";
+import { Actor, ActorStatus, ActorType, Direction } from "core";
 import p5 from "p5";
 import { ClientStore } from "../containers/GameWrapper";
 
@@ -35,24 +35,30 @@ export const drawActor = (p: p5, actor: Actor, isSelected: boolean) => {
 const getDrawMethod = (p: p5, actor: Actor, cellSize: number) => {
     switch(actor.type) {
         case ActorType.CHAMPION:
-            return () => drawYWing(p, actor.status.orientation, cellSize * CHAMP_SIZE, cellSize);
+            return () => drawYWing(p, actor.status, cellSize * CHAMP_SIZE, cellSize);
         case ActorType.MINER:
-            return () => drawYWing(p, actor.status.orientation, cellSize * MINER_SIZE, cellSize);
+            return () => drawYWing(p, actor.status, cellSize * MINER_SIZE, cellSize);
         case ActorType.OUTPOST:
             return () => drawOutpost(p, cellSize * OUTPOST_SIZE, cellSize);
         default: return null; 
     }
 }
 // x * c = 0.15
-const drawYWing = (p: p5, orientation: Direction, actorSize: number, cellSize: number) => {
+const drawYWing = (p: p5, status: ActorStatus, actorSize: number, cellSize: number) => {
     p.push();
     p.translate(0.07 * cellSize, 0.07 * cellSize);
-    p.rotate(Math.log2(orientation) * 90); // *chefs kiss*
+    p.rotate(Math.log2(status.orientation) * 90); // *chefs kiss*
     p.beginShape(p.QUADS);
     p.vertex(0, -actorSize * 0.5); // tip
     p.vertex(actorSize * 0.3, actorSize * 0.3); // rightwing
     p.vertex(0, 0); // nut
     p.vertex(-actorSize * 0.3, actorSize * 0.3); //leftwing
+    if (status.mineralHoldings) {
+        p.push()
+        p.stroke(0,255,255);
+        p.ellipse(0, -actorSize * 0.5, actorSize * 0.3)
+        p.pop()
+    }
     p.endShape(p.CLOSE);
     p.pop();
 }

@@ -1,12 +1,30 @@
 import { store, CELLS_PER_MILLISECOND } from '.';
-import { ActorStatus } from '../types/actor';
-import { Direction, CoordPair, CoordPairUtils, DirectionUtils } from '../types';
+import { ActorStatus, ActorType } from '../types/actor';
+import { Direction, CoordPair, CoordPairUtils, DirectionUtils, CellModifier } from '../types';
 import { updateActorStatus } from '../ducks/actorState';
 import { getAverageFrameLength } from './frameManager';
 import { getActorPath } from '../selectors/actorSelectors';
+import { addPlayerMinerals } from '../ducks/playerState';
 
 export const updateActors = () => Object.keys(store.getState().actorState.actorDict).forEach(actorId => {
     moveActorAlongPath(CELLS_PER_MILLISECOND * getAverageFrameLength(), actorId);
+    const actor = store.getState().actorState.actorDict[actorId];
+    const roundedLocation = CoordPairUtils.roundedPair(actor.status.location);
+    const isOverAMine = store.getState().mapState.cellModifiers[roundedLocation.y][roundedLocation.x] === CellModifier.MINE;
+    if (isOverAMine && actor.type === 'MINER' && !actor.status.mineralHoldings && actor.status.patrolDestination) {
+        const newStatus = {...actor.status, mineralHoldings: 10};
+        updateActorStatus(store, actorId, newStatus);
+        return;
+    }
+    const outpostList = Object.values(store.getState().actorState.actorDict).filter(a => a.type === ActorType.OUTPOST && actor.ownerId === a.ownerId);
+    const isOverAnOutpost = outpostList.some(o => CoordPairUtils.equalPairs(o.status.location, roundedLocation));
+    console.log(isOverAnOutpost, actor.status.mineralHoldings)
+    if (isOverAnOutpost && actor.status.mineralHoldings) {
+        const mineralHoldings = actor.status.mineralHoldings;
+        const newStatus = {...actor.status, mineralHoldings: 0};
+        updateActorStatus(store, actorId, newStatus);
+        addPlayerMinerals(store, actor.ownerId, mineralHoldings);
+    }
 });
 
 export const moveActorAlongPath = (distance: number, actorId: string) => {

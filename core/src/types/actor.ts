@@ -13,6 +13,7 @@ export type ActorStatus = {
     orientation: Direction;
     destination?: CoordPair;
     patrolDestination?: CoordPair; // for use with automining
+    mineralHoldings?: number
 };
 
 export enum ActorType {

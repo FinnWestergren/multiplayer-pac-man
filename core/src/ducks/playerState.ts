@@ -16,10 +16,7 @@ export const playerStateReducer: Reducer<PlayerState, PlayerStateAction> = (stat
             break;
         }
         case PlayerStateActionTypes.ADD_PLAYER_MINERALS: {
-            const playerMinerals = draft.playerMineralsDict[action.payload.playerId];
-            if (playerMinerals === undefined) {
-                return draft;
-            }
+            const playerMinerals = draft.playerMineralsDict[action.payload.playerId] ?? 0;
             const playerMineralsDict = { ...draft.playerMineralsDict, [action.payload.playerId]: (action.payload.minerals + playerMinerals) };
             draft.playerMineralsDict = playerMineralsDict;
             break;
