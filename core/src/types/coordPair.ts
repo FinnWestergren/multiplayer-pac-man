@@ -67,12 +67,10 @@ const distDirect = (start: CoordPair, finish: CoordPair) => {
     }
 };
 
-//transform to primitive type (do this only on rounded pairs. floats will have unexpected behavior)
+//transform to primitive type for the selector (do this only on rounded pairs. floats will have unexpected behavior)
 const serialize = (val: CoordPair) => (val.x << 8) + val.y;
 //transform from primitive type
-const deserialize = (val: number) => {
-    return { x: val >>> 8, y: val & 0xFF}
-}
+const deserialize = (val: number) => ({ x: val >>> 8, y: val & 0xFF});
 
 export const CoordPairUtils = {
     zeroPair,

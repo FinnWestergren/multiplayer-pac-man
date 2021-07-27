@@ -20,12 +20,14 @@ export const getNextDestinationAlongPath: (dist: number, actorId: string) => Act
     const status = store.getState().actorState.actorDict[actorId].status;
     if (dist === 0 || !status.destination) return null;
     if (CoordPairUtils.equalPairs(status.location, status.destination)) {
-        return { ...status, destination: undefined };
+        return { ...status, destination: status.patrolDestination, patrolDestination: status.destination }; // simple way to flip it around
     }
     const path = checkCurrentPathStatus(status, getActorPath(store.getState(), actorId).path); 
     let nextLocation = CoordPairUtils.snappedPair(status.location);
     let nextDirection = status.orientation;
     let remainingDist = dist;
+    // in practice, in most cases we won't really need to worry about anything beyond the first 2 parts of the path, 
+    // but it's cleanest to code it this way, and it should handle extreme lag
     for (let pathIndex = 0; pathIndex < path.length; pathIndex++) {
         const targetCell = path[pathIndex];
         nextDirection = CoordPairUtils.getDirection(nextLocation, targetCell)

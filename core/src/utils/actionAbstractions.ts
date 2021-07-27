@@ -8,7 +8,7 @@ export const handlePlayerInput = (store: ReduxStore, playerId: string, stampedIn
         case InputType.MOVE_UNIT:
             const actorStatus = store.getState().actorState.actorDict[stampedInput.input.actorId]?.status;
             if (!actorStatus) return;
-            const newStatus = {...actorStatus, location: stampedInput.input.origin, destination: stampedInput.input.destination};
+            const newStatus = {...actorStatus, location: stampedInput.input.origin, destination: stampedInput.input.destination, patrolDestination: stampedInput.input.origin};
             updateActorStatus(store, stampedInput.input.actorId, newStatus);
             const distTravelled = stampedInput.timeAgo * CELLS_PER_MILLISECOND;
             console.log(`${playerId.substring(0, 4)} made a move input ${stampedInput.timeAgo}ms ago\t`, 'distance travelled since then', distTravelled);

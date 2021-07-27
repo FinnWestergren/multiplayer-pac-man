@@ -12,6 +12,7 @@ export type ActorStatus = {
     location: CoordPair;
     orientation: Direction;
     destination?: CoordPair;
+    patrolDestination?: CoordPair; // for use with automining
 };
 
 export enum ActorType {

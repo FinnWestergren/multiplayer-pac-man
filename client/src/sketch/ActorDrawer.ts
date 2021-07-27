@@ -45,7 +45,6 @@ const getDrawMethod = (p: p5, actor: Actor, cellSize: number) => {
 }
 // x * c = 0.15
 const drawYWing = (p: p5, orientation: Direction, actorSize: number, cellSize: number) => {
-    console.log(0.0025 * cellSize);
     p.push();
     p.translate(0.07 * cellSize, 0.07 * cellSize);
     p.rotate(Math.log2(orientation) * 90); // *chefs kiss*

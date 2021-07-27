@@ -1,5 +1,5 @@
 import { createCachedSelector } from 're-reselect'
-import { CoordPair, CoordPairUtils, ReduxState} from '../types'
+import { CoordPairUtils, ReduxState} from '../types'
 import { dijkstras } from '../utils/dijkstra';
 import { junctionSelector } from './mapSelectors';
 
@@ -12,9 +12,6 @@ export const getActorPath = createCachedSelector(
     (state: ReduxState,  _actorId: string) => junctionSelector(state.mapState),
     actorLocationSelector,
     actorDestinationSelector,
-    (junctions, serializedOrigin, serializedDestination) => {
-        return dijkstras(CoordPairUtils.deserialize(serializedOrigin), CoordPairUtils.deserialize(serializedDestination), junctions);
-    }
-)(
-    (state: ReduxState, actorId: string) => actorId
-)
+    (junctions, serializedOrigin, serializedDestination) => 
+        dijkstras(CoordPairUtils.deserialize(serializedOrigin), CoordPairUtils.deserialize(serializedDestination), junctions))
+    ((state: ReduxState, actorId: string) => actorId)

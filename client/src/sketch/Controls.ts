@@ -7,9 +7,7 @@ import { InputMode, setInputMode } from "../ducks/clientState";
 export const bindHumanPlayer = (p: p5, selectActor: (actorId: string | null) => void, getSelectedActorId: () => string | null) => {
     const oneOverCellSize = 1 / ClientStore.getState().mapState.cellDimensions.cellSize;
     const cells = ClientStore.getState().mapState.mapCells;
-    if (!cells || cells.length === 0) {
-        return;
-    }
+    if (!cells || cells.length === 0) return;
     const max_y = cells.length, max_x = cells[0].length;
 
     const getClickedTile = (mouse: CoordPair) => {
