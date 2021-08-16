@@ -1,5 +1,5 @@
+import { CoordPair } from "../types";
 import { Direction, DirectionUtils } from "../types/direction";
-import MapNode from "./mapNode";
 
 export const preProcessMap = (cells: Direction[][]) => {
     const [height, width] = [cells.length, cells[0].length];
@@ -12,17 +12,38 @@ export const preProcessMap = (cells: Direction[][]) => {
                 nodesSoFar[y].push(null)
                 continue;
             }
-            nodesSoFar[y].push(new MapNode(x, y));
+            const newNode = { x, y, neighbors: [] };
             if (DirectionUtils.isLeft(cell)) {
-                nodesSoFar[y][x]!.TieNeighbor(findLeftNode(x, y, nodesSoFar), Direction.LEFT);
+                TieNeighbor(newNode, findLeftNode(x, y, nodesSoFar), Direction.LEFT);
             }
             if (DirectionUtils.isUp(cell)) {
-                nodesSoFar[y][x]!.TieNeighbor(findUpNode(x, y, nodesSoFar), Direction.UP);
+                TieNeighbor(newNode, findUpNode(x, y, nodesSoFar), Direction.UP);
             }
+            nodesSoFar[y].push(newNode);
         }
     }
     return nodesSoFar;
 };
+
+export type MapNode = CoordPair & {
+    neighbors: (MapNode | null)[];
+}
+
+export const tieAllNodes = (node: MapNode, nodeMap: (MapNode | null)[][], cell: Direction, bothWays: boolean = false) => {
+    if (DirectionUtils.isLeft(cell)) {
+        TieNeighbor(node, findLeftNode(node.x, node.y, nodeMap), Direction.LEFT, bothWays);
+    }
+    if (DirectionUtils.isUp(cell)) {
+        TieNeighbor(node, findUpNode(node.x, node.y, nodeMap), Direction.UP, bothWays);
+    }
+    if (DirectionUtils.isDown(cell)) {
+        TieNeighbor(node, findDownNode(node.x, node.y, nodeMap), Direction.DOWN, bothWays);
+    }
+    if (DirectionUtils.isRight(cell)) {
+        TieNeighbor(node, findRightNode(node.x, node.y, nodeMap), Direction.RIGHT, bothWays);
+    }
+}
+
 
 const findLeftNode = (x: number, y: number, nodeMap: (MapNode | null)[][]) => {
     for (let i = x - 1; i >= 0; i--) {
@@ -46,23 +67,31 @@ const findDownNode = (x: number, y: number, nodeMap: (MapNode | null)[][]) => {
 }
 
 const findRightNode = (x: number, y: number, nodeMap: (MapNode | null)[][]) => {
-    for (let i = x + 1; i < nodeMap[0].length; i++) {
+    for (let i = x + 1; i < nodeMap[y].length; i++) {
         if (nodeMap[y][i] !== null) return nodeMap[y][i];
     }
     return null;
 }
 
-export const tieAllNodes = (node: MapNode, nodeMap: (MapNode | null)[][], cell: Direction, bothWays: boolean = false) => {
-    if (DirectionUtils.isLeft(cell)) {
-        node.TieNeighbor(findLeftNode(node.x, node.y, nodeMap), Direction.LEFT, bothWays);
+const TieNeighbor = (node: MapNode, otherNode: MapNode | null, dir: Direction, bothWays: boolean = true) => {
+    switch (dir) {
+        case Direction.UP:
+            node.neighbors[0] = otherNode;
+            break;
+        case Direction.RIGHT:
+            node.neighbors[1] = otherNode;
+            break;
+        case Direction.DOWN:
+            node.neighbors[2] = otherNode;
+            break;
+        case Direction.LEFT:
+            node.neighbors[3] = otherNode;
+            break;
+        default:
+            console.warn('MapNode.TieNeighbor recieved invalid direction', DirectionUtils.getString(dir))
+            return;
     }
-    if (DirectionUtils.isUp(cell)) {
-        node.TieNeighbor(findUpNode(node.x, node.y, nodeMap), Direction.UP, bothWays);
-    }
-    if (DirectionUtils.isDown(cell)) {
-        node.TieNeighbor(findDownNode(node.x, node.y, nodeMap), Direction.DOWN, bothWays);
-    }
-    if (DirectionUtils.isRight(cell)) {
-        node.TieNeighbor(findRightNode(node.x, node.y, nodeMap), Direction.RIGHT, bothWays);
+    if (otherNode !== null && bothWays) {
+        TieNeighbor(otherNode, node, DirectionUtils.getOpposite(dir), false);
     }
 }

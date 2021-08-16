@@ -3,8 +3,9 @@ const left = (i: number) => (i << 1) + 1;
 const right = (i: number) => (i + 1) << 1;
 
 export default class PriorityQueue<T> {
-    private heap: T[];
+    private heap: { value: T, insertTime: number } [];
     private comparator: (a: T, b: T) => boolean; // a > b for maxheap, a < b for minheap
+    private counter: number = 0;
 
     public constructor(comparator: (a: T, b: T) => boolean) {
         this.comparator = comparator;
@@ -23,13 +24,14 @@ export default class PriorityQueue<T> {
         }
         this.heap.pop();
         this.siftDown();
-        return poppedValue;
+        return poppedValue.value;
     };
 
     public push = (...values: T[]) => {
         values.forEach((value) => {
-            this.heap.push(value);
+            this.heap.push({ value, insertTime: this.counter });
             this.siftUp();
+            this.counter++;
         });
     };
 
@@ -37,11 +39,14 @@ export default class PriorityQueue<T> {
         [this.heap[a], this.heap[b]] = [this.heap[b], this.heap[a]];
     }
 
-    private compare = (a: number, b: number) => this.comparator(this.heap[a], this.heap[b]);
+    private compare = (a: number, b: number, up: boolean) =>
+        this.comparator(this.heap[a].value, this.heap[b].value) || 
+        (up ? this.heap[a].insertTime < this.heap[b].insertTime
+        : this.heap[a].insertTime > this.heap[b].insertTime)
 
     private siftUp() {
         let node = this.size() - 1;
-        while (node > 0 && this.compare(node, parent(node))) {
+        while (node > 0 && this.compare(node, parent(node), true)) {
             this.swap(node, parent(node));
             node = parent(node);
         }
@@ -50,16 +55,16 @@ export default class PriorityQueue<T> {
     siftDown() {
         let node = 0;
         while (
-            (left(node) < this.size() && this.compare(left(node), node)) ||
-            (right(node) < this.size() && this.compare(right(node), node))
+            (left(node) < this.size() && this.compare(left(node), node, false)) ||
+            (right(node) < this.size() && this.compare(right(node), node, false))
         ) {
-            let maxChild =
+            let swapChild =
                 right(node) < this.size() &&
-                this.compare(right(node), left(node))
+                this.compare(right(node), left(node), false)
                     ? right(node)
                     : left(node);
-            this.swap(node, maxChild);
-            node = maxChild;
+            this.swap(node, swapChild);
+            node = swapChild;
         }
     }
 }

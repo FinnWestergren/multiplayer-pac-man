@@ -6,5 +6,4 @@ export {runGame as runGame} from './game';
 export {CELLS_PER_MILLISECOND as CELLS_PER_MILLISECOND} from './game';
 export {getUpdateFrequency as getUpdateFrequency} from './game';
 export * from './utils'
-export * from './map'
 export * from './selectors'
